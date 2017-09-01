@@ -99,3 +99,13 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# Darwin / OSX temp files
+.DS_Store
+._.DS_Store
+
+# "temp" files from emacs
+*~
+
+# WingIDE 'user' project file
+*.wpu
