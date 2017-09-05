@@ -25,7 +25,7 @@ def load_textfile_to_stringlist(filename, program_options=None):
         for line in ifp:
             output.append( line.rstrip() )
 
-    print_verbose("Load input file: Complete", program_options)
+    print_verbose("Load Complete", program_options)
 
     if program_options.param_log_debug is True:
         print_debug("file contents:", program_options)
@@ -111,7 +111,7 @@ def get_metadata_section(file_lines, program_options):
         msg = "Metadata section not found. Missing metadata section start token: '<!---'."
         raise EOFError, msg
 
-    print_verbose("Extract metadata lines - Complete", program_options)
+    print_verbose("Extract metadata lines complete", program_options)
 
     return metadata_file_lines
 
