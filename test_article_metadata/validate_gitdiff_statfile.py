@@ -310,9 +310,10 @@ def main():
             print_message("Metadata verification PASSED", program_options)
             summary_num_passed += 1
         else:
-            print_message("Metadata verification FAILED", program_options)
-            print_verbose("Reasons:\n%s"%(failmsg), program_options)
             summary_num_failed += 1
+            failmsg = str(failmsg).rstrip()
+            print_message("Metadata verification FAILED", program_options)
+            print_verbose("Message:\n=== Begin Failure Message ===\n%s\n=== End Failure Message ==="%(failmsg), program_options)
             summary_list_failed.append(entry.gen_file_with_relpath())
             all_tests_passed = False
 

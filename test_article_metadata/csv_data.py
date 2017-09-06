@@ -81,22 +81,30 @@ class csv_data(object):
         if self.first_row_is_header is False:
             raise NotImplementedError, "First row must be a header."
 
+        # dictreader does not give me the actual line, so we need to scan through the file
+        # and pick out the lines to skip (i.e., commented lines)
+        lines_to_skip = []
         with open(filename, 'rb') as csvfile:
+            row_num = 1
+            for row in csvfile:
+                if row[0] == self.comment_char:
+                    lines_to_skip.append(row_num)
+                row_num += 1
 
+        # read the file in via the dictreader
+        with open(filename, 'rb') as csvfile:
             reader = csv.DictReader(csvfile, fieldnames=None, restkey=None, restval=None, dialect='excel')
-
             self.column_headers = copy.deepcopy(reader.fieldnames)
-
             num_rows = 0
-
             for row in reader:
-                num_rows += 1
-                for k,v in row.iteritems():
-                    if not self.column_data.has_key(k):
-                        if num_rows > 1:
-                            raise IOError, "new keys should only show up on row 1"
-                        self.column_data[k] = []
-                    self.column_data[k].append(v)
+                if not reader.line_num in lines_to_skip:
+                    num_rows += 1
+                    for k,v in row.iteritems():
+                        if not self.column_data.has_key(k):
+                            if num_rows > 1:
+                                raise IOError, "new keys should only show up on row 1"
+                            self.column_data[k] = []
+                        self.column_data[k].append(v)
 
             self.num_rows = num_rows
 
