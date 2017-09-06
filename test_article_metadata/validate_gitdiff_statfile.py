@@ -11,9 +11,11 @@ assumed to be in the directory where this script is executed from
 """
 import os
 import os.path
+import re
 import sys
 from optparse import OptionParser
 
+from csv_data import *
 from metadata_validation_core import *
 from utilities import *
 
@@ -21,8 +23,9 @@ from utilities import *
 
 def process_program_options():
     parser = OptionParser()
-    parser.add_option("-f", "--filename", dest="param_ifilename",    default=None,              help="[REQUIRED] Input filename")
+    parser.add_option("-f", "--filename", dest="param_ifilename",    default=None,              help="[REQUIRED] Input gitdiff file.")
     parser.add_option("-s", "--specfile", dest="param_specfilename", default=None,              help="[REQUIRED] Constraints Specification Filename")
+    parser.add_option("-p", "--package-list", dest="param_pkglistfile",  default=None,              help="[REQUIRED] Package list spec file (CSV)")
     parser.add_option("-d", "--dry-run",  action="store_true",       dest="param_dry_run",      default=False, help="[OPTIONAL] Dry Run. If      enabled then don't modify any files. Default: %default")
     parser.add_option("-D", "--debug",    action="store_true",       dest="param_log_debug",    default=False, help="[OPTIONAL] Debug mode.      Default: %default")
     parser.add_option("-V", "--verbose",  action="store_true",       dest="param_log_verbose",  default=False, help="[OPTIONAL] Verbose mode.    Default: %default")
@@ -35,7 +38,9 @@ def process_program_options():
         parser.print_help()
         sys.exit(1)
 
-    if options.param_ifilename is None:
+    if options.param_ifilename is None or    \
+       options.param_specfilename is None or \
+       options.param_pkglistfile is None:
         parser.print_help()
         sys.exit(1)
 
@@ -85,7 +90,9 @@ class package(object):
         """
         True if the given path is part of the "package path"
         """
-        return path in self.package_path
+        pattern = r"%s"%(self.package_path)
+        return re.search(pattern, path) is not None
+        # return path in self.package_path
 
     def __str__(self):
         return "%s\t%s"%(self.name(), self.path())
@@ -144,10 +151,18 @@ class package_collection(object):
 
 
 
-def gen_bssio_packages():
+def gen_bssio_packages(packagelist_filename=None):
+    """
+    """
     packages = package_collection()
-    packages.add("test_data",      "scripts/test_data/")
-    packages.add("CuratedContent", "CuratedContent/")
+    if packagelist_filename is None:
+        packages.add("default", ".*")
+    else:
+        data = csv_data(delimiter=",", first_row_is_header=True, ignore_empty_lines=True, comment_char="#")
+        data.load_csv(packagelist_filename)
+        for entry in data.iterrows_dict():
+            packages.add(entry["Package_Name"], entry["Package_Path"])
+
     return packages
 
 
@@ -175,13 +190,11 @@ class git_numstat_entry(object):
         self.subtractions = int(line[1])
         filename          = line[2]
 
-
-
         filepath, filename = os.path.split(filename)
         filename, fileext  = os.path.splitext(filename)
 
-        self.absfilepath = os.path.abspath(filepath)
-        self.filepath    = filepath
+        self.absfilepath = os.path.abspath(filepath) + os.path.sep
+        self.filepath    = filepath + os.path.sep
         self.filename    = filename
         self.fileext     = fileext
 
@@ -240,9 +253,10 @@ def main():
     print_verbose("-"*80, program_options)
     print_verbose("Prepare BSSIO test package information.", program_options)
     print_verbose("-"*80, program_options)
-    packages = gen_bssio_packages()
+    print_verbose("Load package data from file: %s"%(program_options.param_pkglistfile), program_options)
+    packages = gen_bssio_packages(program_options.param_pkglistfile)
     # packages.prettyPrint(indent=2)
-    print_verbose("Packages:\n%s"%(packages.prettyString(indent=2)), program_options)
+    print_verbose("Packages:\n%s"%(packages.prettyString(indent=6).rstrip()), program_options)
 
     # Load specfile data
     print_message("-"*80, program_options)
@@ -285,7 +299,7 @@ def main():
         # if the file 'fails' the check then we should print out the message and keep going but set
         # the overall pass/fail status to FAIL.
         if pkg is None:
-            print_message("Skipping: file is not in a designated package area.")
+            print_message("Skipping: file is not in a designated package area.", program_options)
             continue
 
         print_message("Checking metadata ...", program_options)

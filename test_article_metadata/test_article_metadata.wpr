@@ -50,8 +50,11 @@ proj.launch-config = {loc('../../../../bin/indent_for_wiki.py'): ('project',
                       loc('scripts/validate_gitdiff_statfile.py'): ('custom',
         (u'',
          'launch-I4MNcqASex2rhINl')),
+                      loc('validate_gitdiff_statfile.py'): ('project',
+        (u'-f test_data/___git_changes.txt -s config-metadata.txt -p package_list.csv -V',
+         '')),
                       loc('../../../projects/LDRD_Patterns_of_Life/Development/odbPatternsOfLife/Scripts/py-examples/pyCSVTimeZoneConversion.py'): ('p'\
         'roject',
         (u'-f test_file_tz_zulu.csv -o test_file_tz_local.csv --column_lbl_src=DateTimeZ --column_lbl_dst=DateTimeL --tzoffset_src=0 --tzoffset_dst=9 --remove_src_column -b -D\n',
          ''))}
-proj.main-file = loc('scripts/validate_gitdiff_statfile.py')
+proj.main-file = loc('validate_gitdiff_statfile.py')
