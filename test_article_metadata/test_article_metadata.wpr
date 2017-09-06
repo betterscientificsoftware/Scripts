@@ -1,0 +1,57 @@
+#!wing
+#!version=6.0
+##################################################################
+# Wing IDE project file                                          #
+##################################################################
+[project attributes]
+debug.launch-configs = (2,
+                        {'launch-I4MNcqASex2rhINl': ({'shared': True},
+        {'buildcmd': ('project',
+                      None),
+         'env': ('project',
+                 [u'']),
+         'name': u'validate_gitdiff_statfile configuration',
+         'pyexec': ('project',
+                    u''),
+         'pypath': ('project',
+                    []),
+         'pyrunargs': ('project',
+                       '-u'),
+         'runargs': u'-s scripts/metadata_spec.txt -f __git_changes.txt -V',
+         'rundir': ('custom',
+                    u'$(WING:PROJECT_DIR)')})})
+proj.directory-list = [{'dirloc': loc('.'),
+                        'excludes': (),
+                        'filter': u'*',
+                        'include_hidden': False,
+                        'recursive': True,
+                        'watch_for_changes': True}]
+proj.file-type = 'shared'
+proj.launch-config = {loc('../../../../bin/indent_for_wiki.py'): ('project',
+        (u'-f ../.bashrc',
+         '')),
+                      loc('../../../Trilinos/source/Trilinos.github/packages/anasazi/pyFileTextReplaceCommon.py'): ('p'\
+        'roject',
+        (u'-V --help',
+         '')),
+                      loc('../../../Trilinos/source/Trilinos.github/packages/anasazi/pyFindFilesWithLicenseAndReplaceHeader.py'): ('p'\
+        'roject',
+        (u'-V --report-only-matches --backup',
+         '')),
+                      loc('scripts/changedPackages.py'): ('custom',
+        (u'',
+         'launch-I4MNcqASex2rhINl')),
+                      loc('scripts/validate_article.py'): ('project',
+        (u'-f test_data/test_file_001.md -s metadata_spec.txt \n',
+         '')),
+                      loc('scripts/validate_article_v002.py'): ('project',
+        (u'-s metadata_spec.txt -f test_file_001.md -D',
+         '')),
+                      loc('scripts/validate_gitdiff_statfile.py'): ('custom',
+        (u'',
+         'launch-I4MNcqASex2rhINl')),
+                      loc('../../../projects/LDRD_Patterns_of_Life/Development/odbPatternsOfLife/Scripts/py-examples/pyCSVTimeZoneConversion.py'): ('p'\
+        'roject',
+        (u'-f test_file_tz_zulu.csv -o test_file_tz_local.csv --column_lbl_src=DateTimeZ --column_lbl_dst=DateTimeL --tzoffset_src=0 --tzoffset_dst=9 --remove_src_column -b -D\n',
+         ''))}
+proj.main-file = loc('scripts/validate_gitdiff_statfile.py')
