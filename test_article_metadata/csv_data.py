@@ -88,6 +88,8 @@ class csv_data(object):
             row_num = 1
             for row in csvfile:
                 if row[0] == self.comment_char:
+                    if 1 == row_num:
+                        raise ValueError, "Invalid row 1, must be a header row."
                     lines_to_skip.append(row_num)
                 row_num += 1
 
