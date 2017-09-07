@@ -326,70 +326,70 @@ class git_diff_entry_nameonly(git_diff_entry):
 
 
 
-class git_numstat_entry(object):
-    """
-    Properties:
-        - additions     (num lines with additions)
-        - subtractions  (num lines with subtractions)
-        - filepath      (path to this file)
-        - absfilepath   (absolute path to this file)
-        - filename      (filename minus ".ext" extension)
-        - fileext       (.ext part of the extension)
+# class git_numstat_entry(object):
+    # """
+    # Properties:
+        # - additions     (num lines with additions)
+        # - subtractions  (num lines with subtractions)
+        # - filepath      (path to this file)
+        # - absfilepath   (absolute path to this file)
+        # - filename      (filename minus ".ext" extension)
+        # - fileext       (.ext part of the extension)
 
-        TODO: REMOVE THIS CLASS
-    """
-    def __init__(self, line):
-        self.initialize(line)
+        # TODO: REMOVE THIS CLASS
+    # """
+    # def __init__(self, line):
+        # self.initialize(line)
 
-    def initialize(self, line):
-        line = line.split()
+    # def initialize(self, line):
+        # line = line.split()
 
-        line_dict = { "+": int(line[0]), "-": int(line[1]) }
+        # line_dict = { "+": int(line[0]), "-": int(line[1]) }
 
-        self.additions    = int(line[0])
-        self.subtractions = int(line[1])
-        filename          = line[2]
+        # self.additions    = int(line[0])
+        # self.subtractions = int(line[1])
+        # filename          = line[2]
 
-        filepath, filename = os.path.split(filename)
-        filename, fileext  = os.path.splitext(filename)
+        # filepath, filename = os.path.split(filename)
+        # filename, fileext  = os.path.splitext(filename)
 
-        self.absfilepath = os.path.abspath(filepath) + os.path.sep
-        self.filepath    = filepath + os.path.sep
-        self.filename    = filename
-        self.fileext     = fileext
+        # self.absfilepath = os.path.abspath(filepath) + os.path.sep
+        # self.filepath    = filepath + os.path.sep
+        # self.filename    = filename
+        # self.fileext     = fileext
 
-    def to_dict(self):
-        return {"+": self.additions,
-                "-": self.subtractions,
-                "filepath": self.filepath,
-                "filename": self.filename,
-                "fileext": self.fileext
-                }
+    # def to_dict(self):
+        # return {"+": self.additions,
+                # "-": self.subtractions,
+                # "filepath": self.filepath,
+                # "filename": self.filename,
+                # "fileext": self.fileext
+                # }
 
-    def gen_filename(self):
-        return self.filename + self.fileext
+    # def gen_filename(self):
+        # return self.filename + self.fileext
 
-    def gen_file_with_path(self):
-        """
-        return the filename assembled with path + filename + ext.
-        """
-        return os.path.join(self.filepath, self.gen_filename() )
+    # def gen_file_with_path(self):
+        # """
+        # return the filename assembled with path + filename + ext.
+        # """
+        # return os.path.join(self.filepath, self.gen_filename() )
 
-    def gen_file_with_abspath(self):
-        """
-        return string of the filename + absolute path.
-        """
-        return os.path.join(self.absfilepath, self.gen_filename() )
+    # def gen_file_with_abspath(self):
+        # """
+        # return string of the filename + absolute path.
+        # """
+        # return os.path.join(self.absfilepath, self.gen_filename() )
 
-    def gen_file_with_relpath(self):
-        """
-        return string of the filename's relative path to cwd.
-        """
-        return os.path.relpath(self.gen_file_with_path(), start='.' )
+    # def gen_file_with_relpath(self):
+        # """
+        # return string of the filename's relative path to cwd.
+        # """
+        # return os.path.relpath(self.gen_file_with_path(), start='.' )
 
-    def __str__(self):
-        s = "+%-3s  -%-3s  %s"%(self.additions, self.subtractions, os.path.join(self.filepath, self.filename+self.fileext))
-        return s
+    # def __str__(self):
+        # s = "+%-3s  -%-3s  %s"%(self.additions, self.subtractions, os.path.join(self.filepath, self.filename+self.fileext))
+        # return s
 
 
 
