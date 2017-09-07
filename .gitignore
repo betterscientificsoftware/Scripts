@@ -109,3 +109,6 @@ ENV/
 
 # WingIDE 'user' project file
 *.wpu
+
+# Ignore files with triple leading underscores
+___*
