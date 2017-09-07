@@ -348,5 +348,3 @@ def load_metadata_specfile(filename, program_options=None):
     return specfile_data
 
 
-
-
