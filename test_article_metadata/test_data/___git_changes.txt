@@ -1,5 +1,5 @@
-7	1	test_data/test_file_001.md
-7	2	test_data/test_file_002.md
-13	7	test_data/test_file_003.md
-37	4	test_data/test_file_004.md
-17	51	test_data/test_file_005.md
+test_data/test_001_fail.md
+test_data/test_002_pass.md
+test_data/test_003_fail.md
+test_data/test_004_fail.md
+test_data/test_005_fail.md
