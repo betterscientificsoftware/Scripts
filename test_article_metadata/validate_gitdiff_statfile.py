@@ -332,7 +332,6 @@ def prepare_git_diff_lines(file_lines):
     """
     output = []
     for line in file_lines:
-        #output.append( git_numstat_entry(line) )
         output.append( git_diff_entry_nameonly(line) )
     return output
 
