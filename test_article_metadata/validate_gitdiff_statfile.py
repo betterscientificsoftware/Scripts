@@ -152,6 +152,7 @@ class package_collection(object):
 
 
 
+
 def gen_bssio_packages(packagelist_filename=None):
     """
     """
@@ -168,6 +169,162 @@ def gen_bssio_packages(packagelist_filename=None):
 
 
 
+class git_diff_entry(object):
+    """
+    Generic class for git diff entries.
+
+    Stores a list of files from git diff output that have been changed.
+    """
+    def __init__(self, line):
+        """
+        c'tor.
+        """
+        self.initialize(line)
+
+    def initialize(self, line):
+        # Initializer should be customized to the specific type of git diff output
+        # we need.  such as --numstat, --summary, --name-only, etc.
+        raise NotImplemented, "this is an abstract class"
+
+    def check_param_str(self, param):
+        """
+        generic checker to make sure paramter is a file like string.
+        """
+        if not isinstance(param, str):
+            raise TypeError, "invalid parameter, string expected."
+        return True
+
+    @property
+    def filepath(self):
+        try:
+            return self._filepath
+        except:
+            self._filepath = None
+        return self._filepath
+
+    @filepath.setter
+    def filepath(self, value):
+        self.check_param_str(value)
+        self._filepath = self.add_trailing_sep_to_path(value)
+        self._absfilepath = self.add_trailing_sep_to_path(os.path.abspath(value))
+
+    @property
+    def absfilepath(self):
+        try:
+            return self._absfilepath
+        except:
+            self._absfilepath = None
+        return self._absfilepath
+
+    @absfilepath.setter
+    def absfilepath(self, value):
+        self.check_param_str(value)
+        self._absfilepath = self.add_trailing_sep_to_path(value)
+        self._filepath = self.add_trailing_sep_to_path(os.path.relpath(value))
+
+    def add_trailing_sep_to_path(self, path):
+        """ Add trailing path separator to paths if they don't already have one. """
+        self.check_param_str(path)
+        if len(path) > 0 and path[-1] != os.path.sep:
+            path += os.path.sep
+        return path
+
+    @property
+    def filename(self):
+        try:
+            return self._filename
+        except:
+            self._filename = None
+        return self._filename
+
+    @filename.setter
+    def filename(self, value):
+        self._filename = value
+
+    @property
+    def fileext(self):
+        try:
+            return self._fileext
+        except:
+            self._fileext = None
+        return self._fileext
+
+    @fileext.setter
+    def fileext(self, value):
+        self._fileext = value
+
+    def gen_filename(self):
+        return self.filename + self.fileext
+
+    def gen_file_with_path(self):
+        """
+        return the filename assembled with path + filename + ext.
+        """
+        return os.path.join(self.filepath, self.gen_filename() )
+
+    def gen_file_with_abspath(self):
+        """
+        return string of the filename + absolute path.
+        """
+        return os.path.join(self.absfilepath, self.gen_filename() )
+
+    def gen_file_with_relpath(self):
+        """
+        return string of the filename's relative path to cwd.
+        """
+        return os.path.relpath(self.gen_file_with_path(), start='.' )
+
+    def to_dict(self):
+        """
+        Return a dictionary based representation of the data.
+
+        Required keys:  { "filepath", "filename", "fileext" }
+        """
+        return { "filepath": self.filepath,
+                 "filename": self.filename,
+                 "fileext" : self.fileext
+               }
+
+    def init_filename(self, filename):
+        """
+        Initialize data structure from a filename.
+
+        Arguments:
+          filename (str): a filename of the form 'path/to/filename.ext'
+
+        Returns:
+          bool: True if successful.
+        """
+        _filepath, _filename = os.path.split(filename)
+        _filename, _fileext  = os.path.splitext(_filename)
+
+        self.absfilepath = os.path.abspath(_filepath)
+
+        self.filepath = _filepath
+        self.filename = _filename
+        self.fileext  = _fileext
+
+        return True
+
+
+class git_diff_entry_nameonly(git_diff_entry):
+    def initialize(self, line):
+        """
+        Initializer for name-only version.
+        - there will be one entry per line in the form path/to/filename.ext
+
+        Arguments:
+          line (str): For this mode, there is one entry per line, and is formatted as "path/to/filename.ext"
+
+        Returns:
+          bool: True if successful.
+        """
+        self.init_filename(line)
+        return True
+
+# TODO: Create git_diff_entry subclasses for --name-status and --numstat variations (if necessary)
+
+
 
 class git_numstat_entry(object):
     """
@@ -178,6 +335,8 @@ class git_numstat_entry(object):
         - absfilepath   (absolute path to this file)
         - filename      (filename minus ".ext" extension)
         - fileext       (.ext part of the extension)
+
+        TODO: REMOVE THIS CLASS
     """
     def __init__(self, line):
         self.initialize(line)
@@ -234,14 +393,15 @@ class git_numstat_entry(object):
 
 
 
-def prepare_git_numstat_lines(file_lines):
+def prepare_git_diff_lines(file_lines):
     """
-    input  : list of lines from git --numstat data file
+    input  : list of lines from git --name-only data file
     output : list of git_numstat_entry
     """
     output = []
     for line in file_lines:
-        output.append( git_numstat_entry(line) )
+        #output.append( git_numstat_entry(line) )
+        output.append( git_diff_entry_nameonly(line) )
     return output
 
 
@@ -271,7 +431,7 @@ def main():
     print_message("-"*80, program_options)
 
     file_lines = load_textfile_to_stringlist(program_options.param_ifilename, program_options)
-    numstat_entry_list = prepare_git_numstat_lines(file_lines)
+    numstat_entry_list = prepare_git_diff_lines(file_lines)
 
     print_message("-"*80, program_options)
     print_message("Inspect files", program_options)
