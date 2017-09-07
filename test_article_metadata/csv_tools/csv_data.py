@@ -18,7 +18,6 @@ from tz_utils import Zone
 
 
 
-
 class csv_data(object):
     """
     CSV Data Class

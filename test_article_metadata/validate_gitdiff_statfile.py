@@ -15,9 +15,10 @@ import re
 import sys
 from optparse import OptionParser
 
-from csv_data import *
-from metadata_validation_core import *
+from csv_tools import *
 from utilities import *
+
+from metadata_validation_core import *
 
 
 

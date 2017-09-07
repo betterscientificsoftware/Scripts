@@ -5,7 +5,7 @@ Core validation functions
 import re
 
 from utilities import *
-from checked_multivalue_dictionary import checked_multivalue_dictionary
+from checked_dictionary import checked_multivalue_dictionary
 
 
 

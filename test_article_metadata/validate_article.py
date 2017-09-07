@@ -26,7 +26,6 @@ import os
 import sys
 from optparse import OptionParser
 
-from colors import colorize
 from metadata_validation_core import *
 from utilities import *
 
