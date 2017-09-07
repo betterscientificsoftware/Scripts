@@ -152,7 +152,6 @@ class package_collection(object):
 
 
 
-
 def gen_bssio_packages(packagelist_filename=None):
     """
     """
@@ -307,6 +306,8 @@ class git_diff_entry(object):
         return True
 
 
+
+# TODO: Create git_diff_entry subclasses for --name-status and --numstat variations (if necessary)
 class git_diff_entry_nameonly(git_diff_entry):
     def initialize(self, line):
         """
@@ -321,75 +322,6 @@ class git_diff_entry_nameonly(git_diff_entry):
         """
         self.init_filename(line)
         return True
-
-# TODO: Create git_diff_entry subclasses for --name-status and --numstat variations (if necessary)
-
-
-
-# class git_numstat_entry(object):
-    # """
-    # Properties:
-        # - additions     (num lines with additions)
-        # - subtractions  (num lines with subtractions)
-        # - filepath      (path to this file)
-        # - absfilepath   (absolute path to this file)
-        # - filename      (filename minus ".ext" extension)
-        # - fileext       (.ext part of the extension)
-
-        # TODO: REMOVE THIS CLASS
-    # """
-    # def __init__(self, line):
-        # self.initialize(line)
-
-    # def initialize(self, line):
-        # line = line.split()
-
-        # line_dict = { "+": int(line[0]), "-": int(line[1]) }
-
-        # self.additions    = int(line[0])
-        # self.subtractions = int(line[1])
-        # filename          = line[2]
-
-        # filepath, filename = os.path.split(filename)
-        # filename, fileext  = os.path.splitext(filename)
-
-        # self.absfilepath = os.path.abspath(filepath) + os.path.sep
-        # self.filepath    = filepath + os.path.sep
-        # self.filename    = filename
-        # self.fileext     = fileext
-
-    # def to_dict(self):
-        # return {"+": self.additions,
-                # "-": self.subtractions,
-                # "filepath": self.filepath,
-                # "filename": self.filename,
-                # "fileext": self.fileext
-                # }
-
-    # def gen_filename(self):
-        # return self.filename + self.fileext
-
-    # def gen_file_with_path(self):
-        # """
-        # return the filename assembled with path + filename + ext.
-        # """
-        # return os.path.join(self.filepath, self.gen_filename() )
-
-    # def gen_file_with_abspath(self):
-        # """
-        # return string of the filename + absolute path.
-        # """
-        # return os.path.join(self.absfilepath, self.gen_filename() )
-
-    # def gen_file_with_relpath(self):
-        # """
-        # return string of the filename's relative path to cwd.
-        # """
-        # return os.path.relpath(self.gen_file_with_path(), start='.' )
-
-    # def __str__(self):
-        # s = "+%-3s  -%-3s  %s"%(self.additions, self.subtractions, os.path.join(self.filepath, self.filename+self.fileext))
-        # return s
 
 
 
@@ -429,9 +361,8 @@ def main():
     print_message("-"*80, program_options)
     print_message("Load git diff file", program_options)
     print_message("-"*80, program_options)
-
     file_lines = load_textfile_to_stringlist(program_options.param_ifilename, program_options)
-    numstat_entry_list = prepare_git_diff_lines(file_lines)
+    gitdiff_entry_list = prepare_git_diff_lines(file_lines)
 
     print_message("-"*80, program_options)
     print_message("Inspect files", program_options)
@@ -444,7 +375,7 @@ def main():
     summary_num_failed  = 0
     summary_list_failed = []
 
-    for entry in numstat_entry_list:
+    for entry in gitdiff_entry_list:
         summary_num_tested += 1
 
         print_message("-", program_options)
