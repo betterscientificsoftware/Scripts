@@ -1,5 +1,7 @@
 test_data/test_001_fail.md
 test_data/test_002_pass.md
-test_data/test_003_fail.md
-test_data/test_004_fail.md
-test_data/test_005_fail.md
+test_data/test_003_pass.md
+test_data/test_004_pass.md
+test_data/test_005_pass.md
+test_data/test_006_pass.md
+test_data/test_007_pass.md

@@ -360,7 +360,9 @@ def main():
     print_message("-"*80, program_options)
     print_message("Load git diff file", program_options)
     print_message("-"*80, program_options)
-    file_lines = load_textfile_to_stringlist(program_options.param_ifilename, program_options)
+
+    md_file = markdown_file(program_options.param_ifilename, program_options)
+    file_lines = md_file.get_stringlist()
     gitdiff_entry_list = prepare_git_diff_lines(file_lines)
 
     print_message("-"*80, program_options)
@@ -402,7 +404,7 @@ def main():
             summary_num_passed += 1
         else:
             summary_num_failed += 1
-            failmsg = str(failmsg).rstrip()
+            failmsg = "File: " + str(entry.gen_file_with_relpath()) + "\n" + str(failmsg).rstrip()
             print_message("Metadata verification FAILED", program_options)
             print_verbose("Message:\n=== Begin Failure Message ===\n%s\n=== End Failure Message ==="%(failmsg), program_options)
             summary_list_failed.append(entry.gen_file_with_relpath())

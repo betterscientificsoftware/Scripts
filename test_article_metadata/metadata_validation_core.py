@@ -8,112 +8,97 @@ from utilities import *
 from checked_dictionary import checked_multivalue_dictionary
 
 
-
-def load_textfile_to_stringlist(filename, program_options=None):
+class markdown_file(object):
     """
-    Load a text file and return it as a list of strings and strip
-    traling whitespce.
-
-    @param filename: [required] The input filename
-    @param program_optons: [optional] program options (from OptionParser).
+    A markdown file handler
     """
-    output = []
+    def __init__(self, filename, program_options=None):
+        self.program_options = program_options
+        self.filename_md     = filename
+        self.load_textfile()
 
-    print_verbose("Load input file: %s"%(filename), program_options)
 
-    with open(filename, "r") as ifp:
-        for line in ifp:
-            output.append( line.rstrip() )
+    def load_textfile(self):
+        """
+        Load the text file into a local stringlist
+        """
+        self.file_lines = []
 
-    print_verbose("Load Complete", program_options)
+        print_verbose("Load input file: %s"%(self.filename_md), self.program_options)
 
-    if program_options.param_log_debug is True:
-        print_debug("file contents:", program_options)
-        for line in output:
-            print_debug(line, program_options)
+        with open(self.filename_md, "r") as ifp:
+            for line in ifp:
+                self.file_lines.append( line.rstrip() )
 
+        print_verbose("Load Complete", self.program_options)
+
+        # if self.program_options.param_log_debug is True:
+            # print_debug("file contents:", self.program_options)
+            # for line in self.file_lines:
+                # print_debug(line, self.program_options)
+
+        return True
+
+
+    def get_stringlist(self):
+        return self.file_lines
+
+
+    def get_comment_sections(self):
+        """
+        Generator to find the comment sections.
+        Note: This only works for comments that start and end with the <!--- and ---> as the ONLY thing on their lines.
+        """
+
+        comment_start_token = "<!---"
+        comment_stop_token  = "--->"
+        comment_file_lines  = []
+        in_comment          = False
+        for line_idx in xrange(len(self.file_lines)):
+            line = self.file_lines[line_idx]
+            line = line.strip()
+            if not in_comment and line == comment_start_token:
+                in_comment = True
+                comment_file_lines = []
+                continue
+            if in_comment and line == comment_stop_token:
+                in_comment = False
+                yield comment_file_lines
+            if in_comment:
+                comment_file_lines.append(line)
+
+        # Flag error if we've hit the end of the file and we didn't get a comment close token
+        if in_comment:
+            msg = "Metadata section not found. Missing comment section end token: '--->'."
+            raise EOFError, msg
+
+
+
+def get_metadata_section(md_file):
+    """
+    Return the metadata section (if it exists), otherwise return None
+    """
+    for comment in md_file.get_comment_sections():
+        for line in comment:
+            if re.match(r"^Publish:", line) is not None:
+                return comment
+    return None
+
+
+
+def is_metadata_section(line_list, program_options):
+    """
+    param lines (list): A list of strings where each entry is a single line with
+                        trailing and leading whitespace removed.
+    Returns TRUE if the given section contains the metadata section.
+    - This will specifically look for a line that starts with "Publish: "
+    """
+    output = False
+
+    for line in line_list:
+        if re.match(r"^Publish:", line) is not None:
+            output = True
     return output
-
-
-
-def string_to_stringlist(text, program_options=None):
-    """
-    Convert a (possibly) multi-line string into a list of strings.
-    """
-    return text.splitlines()
-
-
-
-def extract_metadata_entries(file_lines, program_options):
-    """
-    Extract the metadata key/value properties from the file
-    """
-    metadata = article_metadata()
-
-    metadata_start = "<!---"
-    metadata_stop  = "--->"
-
-    in_metadata = False
-
-    for line in file_lines:
-        if not in_metadata and line == metadata_start:
-            in_metadata = True
-            continue
-
-        if in_metadata and line == metadata_stop:
-            in_metadata = False
-            continue
-
-        if in_metadata:
-            tag,value = re.split(":", line, maxsplit=1)
-            tag = tag.strip()
-            value = value.strip()
-            print_verbose("Metadata: {tag: %s, value: %s}"%(tag,value), program_options)
-            metadata[tag] = value
-
-    return metadata
-
-
-
-def get_metadata_section(file_lines, program_options):
-    """
-    Extract the metadata section from the file.
-    """
-    print_verbose("Extract metadata lines", program_options)
-
-    metadata_start_token = "<!---"
-    metadata_stop_token  = "--->"
-    metadata_file_lines  = []
-
-    in_metadata  = False
-    has_metadata = False
-
-    for line in file_lines:
-
-        line = line.strip()
-
-        if not in_metadata and line == metadata_start_token:
-            in_metadata = True
-            has_metadata = True
-            continue
-
-        if in_metadata and line == metadata_stop_token:
-            in_metadata = False
-            break
-
-        if in_metadata:
-            metadata_file_lines.append(line)
-
-    if in_metadata:
-        msg = "Metadata section not found. Missing metadata section end token: '--->'."
-        raise EOFError, msg
-    if has_metadata is not True:
-        msg = "Metadata section not found. Missing metadata section start token: '<!---'."
-        raise EOFError, msg
-
-    print_verbose("Extract metadata lines complete", program_options)
-
-    return metadata_file_lines
 
 
 
@@ -138,8 +123,22 @@ def check_metadata_tokens(metadata_tokens, mv_dict, program_options):
     """
     mv_dict is a checked_multivalue_dictionary with appropriate rules set up.
     """
+    do_validate = False
+
+    # First pass: Loop through tokens and look for key="Publish" and value="yes"
+    #             If we find that, then do the full check.  Otherwise, the detailed
+    #             test isn't performed.
     for key,value in metadata_tokens:
-        mv_dict.append_property_value(key,value)
+        if key == "Publish" and value == "yes":
+            do_validate = True
+
+    # Second pass: Check the values of the metadata to make sure they're correct.
+    if do_validate is True:
+        for key,value in metadata_tokens:
+            mv_dict.append_property_value(key,value)
+    else:
+        print_message("Skipping metadata check because Publish=yes is not set.", program_options)
+
     return None
 
 
@@ -158,10 +157,6 @@ def check_metadata_stringlist(metadata_stringlist, specfile_data, program_option
     output_passed = True
     output_info   = ""
 
-    # Fail if there's nothing in metadata...
-    if 0 == len(metadata_stringlist):
-        return False
-
     mv_dict = setup_mv_dict_from_specification(specfile_data, program_options)
 
     metadata_tokens = tokenize_metadata(metadata_stringlist, program_options)
@@ -176,38 +171,35 @@ def check_metadata_stringlist(metadata_stringlist, specfile_data, program_option
 
 
 
-def get_metadata_lines_from_file(filename, program_options):
-    """
-    Load a file and pull out the meta lines into a list of strings.
-    """
-    metadata_lines = []
-    file_lines = load_textfile_to_stringlist(filename, program_options)
-    try:
-        metadata_lines = get_metadata_section(file_lines, program_options)
-    except EOFError, msg:
-        print "ERROR:"
-        print msg,"\n"
-
-    return metadata_lines
-
-
-
-def check_metadata_in_file_lines(file_lines, specfile_data, program_options):
+def check_metadata_in_file_lines(md_file, specfile_data, program_options):
     """
     """
     output_passed  = True
-    metadata_lines = []
+    output_failmsg = ""
+    metadata_lines = None
     try:
-        metadata_lines = get_metadata_section(file_lines, program_options)
-        output_passed,output_failmsg = check_metadata_stringlist(metadata_lines, specfile_data, program_options)
+        for comment in md_file.get_comment_sections():
+            if is_metadata_section(comment, program_options):
+                output_passed,output_failmsg = check_metadata_stringlist(comment, specfile_data, program_options)
+                metadata_lines = comment
+                break
 
     except EOFError, msg:
         output_passed  = False
         output_failmsg = msg
-        print_debug("ERROR:", program_options)
-        print_debug(msg, program_options)
+        print_verbose("WARNING:", program_options)
+        print_verbose(msg, program_options)
+        # return output_passed, output_failmsg
 
-    if program_options.param_log_verbose is True and len(metadata_lines)>0:
+    # If there's no metadata section...
+    # - PASS the check since we are only testing for bad metadata sections, not existence of metadata.
+    if metadata_lines is None:
+        print_debug("No metadata found", program_options)
+        output_failmsg = "No metadata section was found"
+        output_passed  = True
+
+    # If the metadata section exists...
+    else:
         print_debug("===== metadata begin =====", program_options)
         for line in metadata_lines:
             print_debug(line, program_options)
@@ -219,13 +211,13 @@ def check_metadata_in_file_lines(file_lines, specfile_data, program_options):
 
 def check_metadata_in_file(filename, specfile_data, program_options):
     """
+    Entry Point...
     """
     print_debug("Check metadata for '%s': "%(filename), program_options)
-
-    output_passed = True
-    file_lines = load_textfile_to_stringlist(filename, program_options)
-    output_passed,output_failmsg = check_metadata_in_file_lines(file_lines, specfile_data, program_options)
-
+    output_passed  = True
+    output_failmsg = ""
+    md_file = markdown_file(filename, program_options)
+    output_passed,output_failmsg = check_metadata_in_file_lines(md_file, specfile_data, program_options)
     return output_passed,output_failmsg
 
 
