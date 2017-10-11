@@ -2,7 +2,9 @@ Package_Name,Package_Path
 test_data,test_data/
 test,test/
 CuratedContent,CuratedContent/
-# Articles,Articles/
+Articles,Articles/
+Site,Site/
+Events,Events/
 #
 # Notes:
 # -  Package_Path is matched using a regular expression
