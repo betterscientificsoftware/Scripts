@@ -32,7 +32,7 @@ R Publish, no
 # Topics
 
 ########################################
-# Topics (Category = Planning)
+# Topics (Categories = Planning)
 D Topics,Categories,Planning,Improving productivity and sustainability
 D Topics,Categories,Planning,Requirements
 D Topics,Categories,Planning,Design
@@ -40,7 +40,7 @@ D Topics,Categories,Planning,Software interoperability
 
 
 ########################################
-# Topics (Category = Development)
+# Topics (Categories = Development)
 D Topics,Categories,Development,Documentation
 D Topics,Categories,Development,Version control
 D Topics,Categories,Development,Configuration and builds
@@ -52,14 +52,14 @@ D Topics,Categories,Development,Development tools
 
 
 ########################################
-# Topics (Category = Performance)
+# Topics (Categories = Performance)
 D Topics,Categories,Performance,High-performance computing (HPC)
 D Topics,Categories,Performance,Performance at leadership computing facilities (LCFs)
 D Topics,Categories,Performance,Performance portability
 
 
 ########################################
-# Topics (Category = Reliability)
+# Topics (Categories = Reliability)
 D Topics,Categories,Reliability,Testing
 D Topics,Categories,Reliability,Continuous integration testing
 D Topics,Categories,Reliability,Reproducibility
@@ -67,7 +67,7 @@ D Topics,Categories,Reliability,Debugging
 
 
 ########################################
-# Topics (Category = Collaboration)
+# Topics (Categories = Collaboration)
 D Topics,Categories,Collaboration,Licensing
 D Topics,Categories,Collaboration,Strategies for more effective teams
 D Topics,Categories,Collaboration,Funding sources and programs
@@ -77,9 +77,9 @@ D Topics,Categories,Collaboration,Discussion forums, Q&A sites
 
 
 ########################################
-# Topics (Category = Skills)
-D Topics,Categories,Collaboration,Personal productivity and sustainability
-D Topics,Categories,Collaboration,Online learning
+# Topics (Categories = Skills)
+D Topics,Categories,Skills,Personal productivity and sustainability
+D Topics,Categories,Skills,Online learning
 
 
 ################################################################################
