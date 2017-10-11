@@ -5,6 +5,7 @@ CuratedContent,CuratedContent/
 Articles,Articles/
 Site,Site/
 Events,Events/
+Root,./
 #
 # Notes:
 # -  Package_Path is matched using a regular expression
