@@ -45,7 +45,7 @@ if [ ! -n  "${TRAVIS}" ]; then
     exit 1
 fi
 
-if [ ! ${TRAVIS_PULL_REQUEST} = true ]; then
+if [ ! ${TRAVIS_PULL_REQUEST} == false ]; then
     echo -e "${Yellow}MESSAGE${NC}:  Not a Pull Request"
     # exit 0
 fi
