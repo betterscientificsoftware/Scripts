@@ -57,6 +57,7 @@ fi
 
 # Get the list of changed files.
 git diff --name-only ${TRAVIS_COMMIT_RANGE} > ${TRAVIS_BUILD_DIR}/___git_changes.txt
+# git status --name-status ${TRAVIS_COMMIT_RANGE} > ${TRAVIS_BUILD_DIR}/___git_changes.txt
 
 cd ${TRAVIS_BUILD_DIR}
 
