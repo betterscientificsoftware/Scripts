@@ -401,7 +401,7 @@ def main():
         try:
             passed,failmsg = check_metadata_in_file(entry.gen_file_with_relpath(), specfile_data, program_options)
         except IOError:
-            print_message("File not found, probably deleted or renamed")
+            print_message("File not found, probably deleted or renamed", program_options)
 
         if passed is True:
             print_message("Metadata verification PASSED", program_options)
