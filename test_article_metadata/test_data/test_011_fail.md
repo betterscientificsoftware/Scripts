@@ -2,7 +2,9 @@
 
 This test file adds the optional `RSS Update: YYYY-MM-DD` tag to the metadata.
 
-Date given will be a valid date: 2018-11-21
+Date given will be valid but improperly formatted date: 11-29-2018
+
+
 
 <!---
 Publish: yes
@@ -12,5 +14,5 @@ Tags: training, webinar,
 Level: 2
 Prerequisites: defaults
 Aggregate: subresource
-RSS Update: 2018-11-21
+RSS Update: 11-29-2018
 --->

@@ -109,4 +109,5 @@ R Aggregate, stand-alone and subresource
 
 ################################################################################
 # RSS Update
-N RSS Update 
+# DO: Date-Optional Format
+DO RSS Update

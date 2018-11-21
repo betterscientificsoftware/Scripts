@@ -135,6 +135,7 @@ def check_metadata_tokens(metadata_tokens, mv_dict, program_options):
     # Second pass: Check the values of the metadata to make sure they're correct.
     if do_validate is True:
         for key,value in metadata_tokens:
+            print key,value
             mv_dict.append_property_value(key,value)
     else:
         print_message("Skipping metadata check because Publish=yes is not set.", program_options)
@@ -157,6 +158,7 @@ def check_metadata_stringlist(metadata_stringlist, specfile_data, program_option
     output_passed = True
     output_info   = ""
 
+    # Set up the constraints in the checked dictionary
     mv_dict = setup_mv_dict_from_specification(specfile_data, program_options)
 
     metadata_tokens = tokenize_metadata(metadata_stringlist, program_options)
@@ -255,6 +257,11 @@ def setup_mv_dict_from_specification(specfile_data, program_options=None):
             print_debug("ADD RESTRICTION NONE: '%s'"%(entry['property_name']), program_options)
             mv_dict.add_restriction(property_name=entry['property_name'], restrictions=None)
 
+        if 'DO' == entry['type']:
+            # todo: handle Date-Optional fields here.
+            print_debug("ADD RESTRICTION DATE-OPTIONAL: '%s'"%(entry['property_name']), program_options)
+            mv_dict.add_restriction_date(property_name=entry['property_name'])
+
     print_debug("%s"%(mv_dict), program_options)
 
     return mv_dict
@@ -274,13 +281,18 @@ def load_metadata_specfile(filename, program_options=None):
       }
       {'type': 'N', 'property_name': <string>
       }
+      {'type': 'DO', 'property_name': <string>
+      }
     ]
 
     Type R entries are simple restrictions in which keys with property_name may only have values
     in the allowable_value list.
+
     Type D entries have restrictions based on a dependency to another property.  dependency_name
     contains the property_name this property has a dependency on.  Dependency_value is the value
     of the other property that we're applying a restriction to for allowable_value.
+
+    Type DO entries are a Date-Optional field.  Date formats are YYYY-MM-DD.
 
     For example:
         property_name: FOO
@@ -306,14 +318,17 @@ def load_metadata_specfile(filename, program_options=None):
         if line[0] == "#":
             continue
 
-        line_type = line[0].upper()
+        # Get the field type.
+        line_type, line_str = line.split(" ", 1)
+        line_type = line_type.upper()
 
-        if line_type not in ['R', 'D', 'N']:
-            raise ValueError, "Bad value in column 0.  Allowable values are 'R' or 'D' but I got a '%s'"%(line[0])
+        # Prune whitespaces
+        line_type = line_type.strip()
 
-        line = line[1:].strip()
+        if line_type not in ['R', 'D', 'N', 'DO']:
+            raise ValueError, "Bad value in column 0.  Allowable values are 'R', 'D', 'N', 'DO' but I got a '%s'"%(line[0])
 
-        line_contents = [x.strip() for x in line.split(',')]
+        line_contents = [x.strip() for x in line_str.strip().split(',')]
 
         print_debug("%s: %s"%(line_type, line_contents), program_options)
 
@@ -328,8 +343,10 @@ def load_metadata_specfile(filename, program_options=None):
             entry['allowable_value']  = line_contents[3]
         elif line_type == 'N':
             entry['property_name'] = line_contents[0]
+        elif line_type == 'DO':
+            entry['property_name'] = line_contents[0]
         else:
-            raise ValueError
+            raise ValueError, "Unknown line_type in spec file."
 
         specfile_data.append(entry)
 
