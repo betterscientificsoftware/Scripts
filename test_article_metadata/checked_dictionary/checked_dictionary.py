@@ -9,6 +9,7 @@ v1.1: restrict-if addition
 from pprint import pformat
 from pprint import pprint
 import sys
+import time
 
 
 
@@ -66,8 +67,9 @@ class checked_dictionary(object):
         self.__init_default__()
 
         if not self._restriction_list.has_key(property_name):
-            self._restriction_list[property_name] = { "restrict-to": None,
-                                                      "restrict-if": None
+            self._restriction_list[property_name] = { "restrict-to-values": None,
+                                                      "restrict-if-dep":    None,
+                                                      "restrict-to-date":   None
                                                     }
         return True
 
@@ -80,16 +82,27 @@ class checked_dictionary(object):
         self.__initialize_restriction__(property_name)
 
         if restrictions is not None:
-            if self._restriction_list[property_name]["restrict-to"] is None:
-                self._restriction_list[property_name]["restrict-to"] = []
+            if self._restriction_list[property_name]["restrict-to-values"] is None:
+                self._restriction_list[property_name]["restrict-to-values"] = []
 
             if not isinstance(restrictions, (list,set,tuple)):
                 restrictions = [ restrictions ]
 
             for r in restrictions:
                 if r not in self.get_restrict_to(property_name):
-                    self._restriction_list[property_name]["restrict-to"].append(r)
+                    self._restriction_list[property_name]["restrict-to-values"].append(r)
 
+        return True
+
+
+    def add_restriction_date(self, property_name):
+        """
+        Add a new property to the parameter whitelist as
+        something that's set to be a date-field in the form
+        YYYY-MM-DD
+        """
+        self.__initialize_restriction__(property_name)
+        self._restriction_list[property_name]["restrict-to-date"] = True
         return True
 
 
@@ -122,22 +135,22 @@ class checked_dictionary(object):
         if restrictions is not None:
             key = (dependency_name,dependency_value)
 
-            if self._restriction_list[property_name]["restrict-if"] is None:
-                self._restriction_list[property_name]["restrict-if"] = {}
+            if self._restriction_list[property_name]["restrict-if-dep"] is None:
+                self._restriction_list[property_name]["restrict-if-dep"] = {}
 
             if not isinstance(restrictions, (list,set,tuple)):
                 restrictions = [ restrictions ]
 
             for r in restrictions:
-                if not self._restriction_list[property_name]["restrict-if"].has_key( key ):
-                    self._restriction_list[property_name]["restrict-if"][key] = []
-                if self._restriction_list[property_name]["restrict-if"].has_key( "dep" ):
-                    if self._restriction_list[property_name]["restrict-if"]["dep"] != dependency_name:
+                if not self._restriction_list[property_name]["restrict-if-dep"].has_key( key ):
+                    self._restriction_list[property_name]["restrict-if-dep"][key] = []
+                if self._restriction_list[property_name]["restrict-if-dep"].has_key( "dep" ):
+                    if self._restriction_list[property_name]["restrict-if-dep"]["dep"] != dependency_name:
                         msg = ">>> Error assigning restriction depedency, cannot have dependencies to multiple properties."
                         raise ValueError,msg
-                self._restriction_list[property_name]["restrict-if"]["dep"] = dependency_name
+                self._restriction_list[property_name]["restrict-if-dep"]["dep"] = dependency_name
 
-                self._restriction_list[property_name]["restrict-if"][key].append(r)
+                self._restriction_list[property_name]["restrict-if-dep"][key].append(r)
 
         return True
 
@@ -159,11 +172,15 @@ class checked_dictionary(object):
 
 
     def get_restrict_to(self, property_name):
-        return self.get_restriction_list(property_name)["restrict-to"]
+        return self.get_restriction_list(property_name)["restrict-to-values"]
 
 
     def get_restrict_if(self, property_name):
-        return self.get_restriction_list(property_name)["restrict-if"]
+        return self.get_restriction_list(property_name)["restrict-if-dep"]
+
+
+    def get_restrict_to_date(self, property_name):
+        return self.get_restriction_list(property_name)["restrict-to-date"]
 
 
     def set_property_value(self, property_name, property_value, validate=True):
@@ -302,42 +319,71 @@ class checked_dictionary(object):
         errors.
         """
         output = True
-        restrict_to = self.get_restrict_to(property_name)
-        restrict_if = self.get_restrict_if(property_name)
+        output = output and self.__validate_restrict_to_values__(property_name, property_value, throw_error_on_fail)
+        output = output and self.__validate_restrict_if_dep__(property_name, property_value, throw_error_on_fail)
+        output = output and self.__validate_restrict_to_date__(property_name, property_value, throw_error_on_fail)
+        return output
 
-        # restrict_to == None means there no immediate restrictions
-        if restrict_to is not None and str(property_value).lower() not in [str(value).lower() for value in restrict_to]:
+
+    def __validate_restrict_to_date__(self, property_name, property_value, throw_error_on_fail=False):
+        output = True
+        if self.get_restrict_to_date(property_name) is True:
+            try:
+                time.strptime(property_value, "%Y-%m-%d")
+            except ValueError:
+                output = False
+                if throw_error_on_fail is True:
+                    msg  = ">>> Invalid value for property '%s'.\n"%(property_name)
+                    msg += ">>> - Received this string: '%s'.\n"%(property_value)
+                    msg += ">>> - These must be a valid date in the format 'YYYY-MM-DD'\n"
+                    raise ValueError, msg
+
+        return output
+
+
+    def __validate_restrict_to_values__(self, property_name, property_value, throw_error_on_fail=False):
+        output = True
+
+        restrict_to_values = self.get_restrict_to(property_name)
+
+        if restrict_to_values is not None and str(property_value).lower() not in [str(value).lower() for value in restrict_to_values]:
             output = False
             if throw_error_on_fail is True:
                 msg  = ">>> Invalid value for property '%s'.\n"%(property_name)
                 msg += ">>> Allowable values are:\n"
-                for r in restrict_to:
+                for r in restrict_to_values:
                     msg += ">>> - '%s'\n"%(r)
                 raise ValueError, msg
 
-        elif restrict_if is not None:
-            dep_key = str(restrict_if["dep"])
-            dep_val = str(self.get_property_value(dep_key))
+        return output
 
-            #if not restrict_if.has_key( (dep_key,dep_val) ):
-            allowable_values = self.__restrict_if_lookup__((dep_key,dep_val), restrict_if, case_sensitive=False)
 
-            if allowable_values is None:
-                output = False
-                if throw_error_on_fail is True:
-                    msg = ">>> Error: Dependency not configured for property/value:'%s'/'%s'"%(dep_key,dep_val)
-                    raise ValueError,msg
+    def __validate_restrict_if_dep__(self, property_name, property_value, throw_error_on_fail=False):
+        output = True
+        restrict_if_dep    = self.get_restrict_if(property_name)
 
-            if not self.__in_list__(property_value, allowable_values, case_sensitive=False):
-                output = False
-                if throw_error_on_fail is True:
-                    msg  = ">>> Invalid value for property '%s', given value '%s'.\n"%(property_name, property_value)
-                    msg += ">>> Failed depenency check against property/value pair '%s'/'%s'\n"%(dep_key,dep_val)
-                    msg += ">>> Allowable values are:\n"
-                    for r in allowable_values:
-                        msg += ">>> - '%s'\n"%(r)
-                    raise ValueError, msg
+        if restrict_if_dep is not None:
+                    dep_key = str(restrict_if_dep["dep"])
+                    dep_val = str(self.get_property_value(dep_key))
 
+                    #if not restrict_if.has_key( (dep_key,dep_val) ):
+                    allowable_values = self.__restrict_if_lookup__((dep_key,dep_val), restrict_if_dep, case_sensitive=False)
+
+                    if allowable_values is None:
+                        output = False
+                        if throw_error_on_fail is True:
+                            msg = ">>> Error: Dependency not configured for property/value:'%s'/'%s'"%(dep_key,dep_val)
+                            raise ValueError,msg
+
+                    if not self.__in_list__(property_value, allowable_values, case_sensitive=False):
+                        output = False
+                        if throw_error_on_fail is True:
+                            msg  = ">>> Invalid value for property '%s', given value '%s'.\n"%(property_name, property_value)
+                            msg += ">>> Failed depenency check against property/value pair '%s'/'%s'\n"%(dep_key,dep_val)
+                            msg += ">>> Allowable values are:\n"
+                            for r in allowable_values:
+                                msg += ">>> - '%s'\n"%(r)
+                            raise ValueError, msg
         return output
 
 
@@ -368,8 +414,6 @@ class checked_dictionary(object):
         output += "\nData:\n"
         output += self.str_data(indent=3, width=90)
         return output
-
-
 
 
 
@@ -484,7 +528,6 @@ def __test_checked_dictionary__():
     mydata.add_restriction_dependency("baz", "bar", "B", restrictions=["E"])
     mydata.add_restriction_dependency("baz", "bar", "B", restrictions=["F"])
 
-
     print "Test invalid assignment: ",
     try:
         mydata.set_property_value("bar","Z",validate=True)
@@ -531,6 +574,43 @@ def __test_checked_dictionary__():
         print "PASS"
         #print msg
 
+    #-------------------------------
+    # Test Dates
+    #-------------------------------
+    print ""
+    print "Test date fields:"
+    print ""
+    mydata.add_restriction_date("DateField")
+
+    strtest = "Test date field correct 2018-11-29"
+    try:
+        mydata["DateField"] = "2018-11-29"
+        strtest = "PASS: " + strtest
+    except ValueError, msg:
+        strtest = "FAIL" + strtest
+        rval = 1
+    print strtest
+    if(rval is 1): print mydata
+
+    strtest = "Test date field correct but invalid format 11-29-2018"
+    try:
+        mydata["DateField"] = "11-12-2018"
+        strtest = "FAIL" + strtest
+        rval = 1
+    except ValueError, msg:
+        strtest = "PASS: " + strtest
+    print strtest
+    if(rval is 1): print mydata
+
+    strtest = "Test date field format ok but bad date 2018-11-31"
+    try:
+        mydata["DateField"] = "2018-11-31"
+        strtest = "FAIL" + strtest
+        rval = 1
+    except ValueError, msg:
+        strtest = "PASS: " + strtest
+    print strtest
+    if(rval is 1): print mydata
 
     print ""
     print "="*80

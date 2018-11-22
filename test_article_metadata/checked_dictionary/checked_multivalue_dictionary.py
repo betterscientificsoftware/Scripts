@@ -90,6 +90,7 @@ class checked_multivalue_dictionary(checked_dictionary):
         else:
             yield key
 
+
     def __gen_multikey_allowed_values__(self, tuple_depends_on, restrict_to_key, restrict_to_val):
         output = []
         for k in self.__gen_key_tuples__(tuple_depends_on):
@@ -130,33 +131,12 @@ class checked_multivalue_dictionary(checked_dictionary):
         return output
 
 
-
-    def __validate_data__(self, property_name, property_value, throw_error_on_fail=False):
-        """
-        Check a property against the restrictions.  Returns True if
-        the property is ok, False otherwise.
-        Set throw_error_on_fail if you want this to throw an error.
-
-        This method is treated as a private method... calling it directly might result
-        in unexpected failures.  For example, we don't check that self._data has been
-        created, so validating a property against an uninitialized instance will throw
-        errors.
-        """
+# Override the __validate_restrict_if_dep__ function for checking dependencies.
+    def __validate_restrict_if_dep__(self, property_name, property_value, throw_error_on_fail=False):
         output = True
-        restrict_to = self.get_restrict_to(property_name)
         restrict_if = self.get_restrict_if(property_name)
 
-        # restrict_to == None means there no immediate restrictions
-        if restrict_to is not None and str(property_value).lower() not in [str(value).lower() for value in restrict_to]:
-            output = False
-            if throw_error_on_fail is True:
-                msg  = ">>> '%s' is an invalid value for property '%s'.\n"%(property_value, property_name)
-                msg += ">>> Allowable values are:\n"
-                for r in restrict_to:
-                    msg += ">>> - '%s'\n"%(r)
-                raise ValueError, msg
-
-        elif restrict_if is not None:
+        if restrict_if is not None:
             dep_key = str(restrict_if["dep"])
             dep_val = self.get_property_value(dep_key)         # TODO: this needs to be checked for being a list...
 
@@ -184,7 +164,6 @@ class checked_multivalue_dictionary(checked_dictionary):
                     raise ValueError, msg
 
         return output
-
 
 
 
@@ -307,7 +286,6 @@ def __test_checked_multivalue_dictionary__():
         print "PASS - checked_multivalue_dictionary"
     else:
         print "FAIL - checked_multivalue_dictionary"
-
 
 
 
