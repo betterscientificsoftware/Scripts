@@ -108,7 +108,19 @@ def tokenize_metadata(metadata_file_lines, program_options):
     """
     metadata_token_list = []
     for line in metadata_file_lines:
-        key,value_list = re.split(":", line, maxsplit=1)
+        line=line.strip()
+        # Skip empty lines because there won't be any key / value pairs on them.
+        if len(line) == 0:
+            continue
+        try:
+            key,value_list = re.split(":", line, maxsplit=1)
+        except:
+            print "Error: Failed to splt the metadata line: '%s'"%(line)
+            print "       Most likely this is because the line is not properly"
+            print "       formed as a 'key:value(,value)*' style line."
+            print "       Please check that the separator is a ':' character."
+            raise ValueError("Failed to split the metadata line: '%s'"%(line) )
+
         key = key.strip()
         for v in value_list.split(","):
             v = v.strip()
