@@ -1,0 +1,11 @@
+language: python
+
+addons:
+  apt:
+    update: true
+
+python:
+  - '2.7'
+
+script:
+  - test_article_metadata/test_validate_article.sh
