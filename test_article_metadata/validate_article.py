@@ -84,7 +84,7 @@ def main():
     if failmsg != "":
         print_message("ERROR: An error was encountered with this file:", program_options)
         print_message("=== BEGIN ERROR MESSAGE ===", program_options)
-        print failmsg
+        print_error(failmsg, program_options)
         print_message("=== END ERROR MESSAGE ===", program_options)
         print_message("Also, search the output above for additional error or warning messages.", program_options)
 

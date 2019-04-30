@@ -231,8 +231,8 @@ def check_metadata_in_file_lines(md_file, specfile_data, program_options):
     except EOFError, msg:
         output_passed  = False
         output_failmsg = msg
-        print_verbose("WARNING:", program_options)
-        print_verbose(msg, program_options)
+        print_warning("WARNING:", program_options)
+        print_warning(msg, program_options)
         # return output_passed, output_failmsg
 
     # If there's no metadata section...
@@ -260,8 +260,19 @@ def check_metadata_in_file(filename, specfile_data, program_options):
     print_debug("Check metadata for '%s': "%(filename), program_options)
     output_passed  = True
     output_failmsg = ""
-    md_file = markdown_file(filename, program_options)
-    output_passed,output_failmsg = check_metadata_in_file_lines(md_file, specfile_data, program_options)
+
+    try:
+        md_file = markdown_file(filename, program_options)
+    except IOError, msg:
+        print_error("An error occurred loading the file, '%s'"%(filename), program_options)
+        print_error("Error message:", program_options)
+        print_error(msg, program_options)
+        output_passed=False
+        output_failmsg=msg
+
+    if output_passed is not False:
+        output_passed,output_failmsg = check_metadata_in_file_lines(md_file, specfile_data, program_options)
+
     return output_passed,output_failmsg
 
 
