@@ -8,5 +8,4 @@ python:
   - '2.7'
 
 script:
-  cd test_article_metadata
-  - test_validate_article.sh
+    - cd test_article_metadata; test_validate_article.sh
