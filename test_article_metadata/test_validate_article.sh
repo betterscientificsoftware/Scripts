@@ -32,10 +32,7 @@ num_tests=0
 num_success=0
 num_failure=0
 
-
 echo ""
-# set -x
-#for file in "${test_articles[@]}"; do
 for ((i=0; i<${#test_articles[@]}; i+=2)); do
     expected_result=${test_articles[i]}
     filename=${test_articles[i+1]}
@@ -66,5 +63,9 @@ echo -e "  Num SUCCESS: ${num_success:?}"
 echo -e "  Num FAILURE: ${num_failure:?}"
 echo -e "==============================="
 
+if [[ ${num_failure:?} != 0 ]]; then
+    echo -e "Tests failed."
+    exit 1
+fi
 
-set +x
+
