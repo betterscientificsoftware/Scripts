@@ -7,5 +7,7 @@ addons:
 python:
   - '2.7'
 
+before_script: cd test_article_metadata
+
 script:
-    - cd test_article_metadata; test_validate_article.sh
+    - test_validate_article.sh
