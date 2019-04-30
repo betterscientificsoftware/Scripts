@@ -49,7 +49,6 @@ class markdown_file(object):
         Generator to find the comment sections.
         Note: This only works for comments that start and end with the <!--- and ---> as the ONLY thing on their lines.
         """
-
         comment_start_token = "<!---"
         comment_stop_token  = "--->"
         comment_file_lines  = []
@@ -86,22 +85,6 @@ def get_metadata_section(md_file):
 
 
 
-def is_metadata_section(line_list, program_options):
-    """
-    param lines (list): A list of strings where each entry is a single line with
-                        trailing and leading whitespace removed.
-    Returns TRUE if the given section contains the metadata section.
-    - This will specifically look for a line that starts with "Publish: "
-    """
-    output = False
-
-    for line in line_list:
-        if re.match(r"^Publish:", line) is not None:
-            output = True
-    return output
-
-
-
 def tokenize_metadata(metadata_file_lines, program_options):
     """
     Tokenize the metadata in the file into key/value pairs.
@@ -109,17 +92,30 @@ def tokenize_metadata(metadata_file_lines, program_options):
     metadata_token_list = []
     for line in metadata_file_lines:
         line=line.strip()
+
+        # Determine which lines to ignore
+
         # Skip empty lines because there won't be any key / value pairs on them.
         if len(line) == 0:
             continue
+        # Skip the special case line that contains the "BSSw Metadata" descriptor.
+        # Since this should always be the first line in the updated ruleset, we
+        # could just slice the list to metadata_file_lines[1:] but for consistency
+        # I'll put in the check here.
+        # TODO: Set this up as a parameter in the configuration file for genericity.
+        if line == "BSSw Metadata":
+            continue
+
+        # The line should be a key:value pair, so let's split on the ":".
+        # Throw an error if the colon is missing :p
         try:
             key,value_list = re.split(":", line, maxsplit=1)
-        except:
+        except ValueError as e:
             print "Error: Failed to splt the metadata line: '%s'"%(line)
             print "       Most likely this is because the line is not properly"
             print "       formed as a 'key:value(,value)*' style line."
             print "       Please check that the separator is a ':' character."
-            raise ValueError("Failed to split the metadata line: '%s'"%(line) )
+            raise ValueError("Failed to split the metadata line: '%s'\nMissing a ':' separator."%(line) )
 
         key = key.strip()
         for v in value_list.split(","):
@@ -141,7 +137,7 @@ def check_metadata_tokens(metadata_tokens, mv_dict, program_options):
     #             If we find that, then do the full check.  Otherwise, the detailed
     #             test isn't performed.
     for key,value in metadata_tokens:
-        if key == "Publish" and value == "yes":
+        if key == "Publish" and value in ["yes", "preview"]:
             do_validate = True
 
     # Second pass: Check the values of the metadata to make sure they're correct.
@@ -150,7 +146,7 @@ def check_metadata_tokens(metadata_tokens, mv_dict, program_options):
             print key,value
             mv_dict.append_property_value(key,value)
     else:
-        print_message("Skipping metadata check because Publish=yes is not set.", program_options)
+        print_message("Skipping metadata check because Publish is not set to 'yes' or 'preview'.", program_options)
 
     return None
 
@@ -173,7 +169,12 @@ def check_metadata_stringlist(metadata_stringlist, specfile_data, program_option
     # Set up the constraints in the checked dictionary
     mv_dict = setup_mv_dict_from_specification(specfile_data, program_options)
 
-    metadata_tokens = tokenize_metadata(metadata_stringlist, program_options)
+    try:
+        metadata_tokens = tokenize_metadata(metadata_stringlist, program_options)
+    except ValueError, msg:
+        output_passed = False
+        output_info   = msg
+        return output_passed, output_info
 
     try:
         check_metadata_tokens(metadata_tokens, mv_dict, program_options)
@@ -185,6 +186,33 @@ def check_metadata_stringlist(metadata_stringlist, specfile_data, program_option
 
 
 
+def is_metadata_section(line_list, program_options):
+    """
+    param lines (list): A list of strings where each entry is a single line with
+                        trailing and leading whitespace removed.
+    Returns TRUE if the given section contains the metadata section.
+    - This will specifically look for a line that starts with "Publish: "
+    """
+    output = False
+
+    if re.match(r"^BSSw Metadata$", line_list[0]) is not None:
+        output = True
+    else:
+        # DEPRECATION WARNING: This method will be deprecated in the future in favor
+        # of looking for the BSSw Metadata tag.
+        for line in line_list:
+            if re.match(r"^Publish:", line) is not None:
+                print_message("WARNING: The metadata section should have 'BSSw Metadata' as its first line.\n" +
+                              "         We didn't find that here but did detect the 'Publish: [yes|no|preview]'\n" +
+                              "         key:value pair so we will guess that this is the metadata section.\n" +
+                              "         This behavior will be DEPRECATED in the future."
+                              , program_options)
+                output = True
+                break
+    return output
+
+
+
 def check_metadata_in_file_lines(md_file, specfile_data, program_options):
     """
     """
@@ -192,10 +220,12 @@ def check_metadata_in_file_lines(md_file, specfile_data, program_options):
     output_failmsg = ""
     metadata_lines = None
     try:
+        print_message("Search comments for metadata section.", program_options)
         for comment in md_file.get_comment_sections():
             if is_metadata_section(comment, program_options):
                 output_passed,output_failmsg = check_metadata_stringlist(comment, specfile_data, program_options)
                 metadata_lines = comment
+                print_message("Metadata section found.", program_options)
                 break
 
     except EOFError, msg:
@@ -208,16 +238,16 @@ def check_metadata_in_file_lines(md_file, specfile_data, program_options):
     # If there's no metadata section...
     # - PASS the check since we are only testing for bad metadata sections, not existence of metadata.
     if metadata_lines is None:
-        print_debug("No metadata found", program_options)
+        print_debug("No metadata section found", program_options)
         output_failmsg = "No metadata section was found"
         output_passed  = True
 
     # If the metadata section exists...
     else:
-        print_debug("===== metadata begin =====", program_options)
+        print_verbose("===== metadata begin =====", program_options)
         for line in metadata_lines:
-            print_debug(line, program_options)
-        print_debug("===== metadata end =====", program_options)
+            print_verbose(line, program_options)
+        print_verbose("===== metadata end =====", program_options)
 
     return output_passed,output_failmsg
 

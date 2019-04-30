@@ -82,8 +82,11 @@ def main():
     passed,failmsg = check_metadata_in_file(program_options.param_ifilename, specfile_data, program_options)
 
     if failmsg != "":
-        print "ERROR: "
+        print_message("ERROR: An error was encountered with this file:", program_options)
+        print_message("=== BEGIN ERROR MESSAGE ===", program_options)
         print failmsg
+        print_message("=== END ERROR MESSAGE ===", program_options)
+        print_message("Also, search the output above for additional error or warning messages.", program_options)
 
     s = "Unknown"
     if passed is True:

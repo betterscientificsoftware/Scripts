@@ -13,6 +13,6 @@ proj.directory-list = [{'dirloc': loc('.'),
 proj.file-type = 'shared'
 proj.launch-config = {loc('test_article_metadata/validate_article.py'): ('pr'\
         'oject',
-        (u'-s config-metadata.txt -f test_data/test_pr_0344.md -D\n',
+        (u'-V -s config-metadata.txt -f test_data/test_issue-03_02.md\n',
          ''))}
 proj.main-file = loc('test_article_metadata/validate_article.py')

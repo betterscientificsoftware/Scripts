@@ -23,6 +23,7 @@
 # Publish
 R Publish, yes
 R Publish, no
+R Publish, preview
 
 
 ################################################################################
