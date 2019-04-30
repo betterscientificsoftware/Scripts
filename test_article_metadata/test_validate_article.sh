@@ -40,10 +40,12 @@ for ((i=0; i<${#test_articles[@]}; i+=2)); do
     err=$?
     if [[ "${expected_result}" == "PASS" ]] && [[ "${err:?}" != "0" ]]; then
         echo -e "${cmd:?}"
+        ${cmd:?}
         echo -e "FAILURE"
         let "num_failure+=1"
     elif [[ "${expected_result}" == "FAIL" ]] && [[ "${err:?}" == "0" ]]; then
         echo -e "${cmd:?}"
+        ${cmd:?}
         echo -e "FAILURE"
         let "num_failure+=1"
     else
