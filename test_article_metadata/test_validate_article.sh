@@ -32,6 +32,7 @@ test_articles=(
     PASS    ${test_dir:?}/test_020_pass_category_collaboration.md    
     PASS    ${test_dir:?}/test_021_pass_category_collaboration_deprecated.md    
     PASS    ${test_dir:?}/test_022_pass_category_skills.md    
+    PASS    ${test_dir:?}/test_023_pass_category_development_only.md
     FAIL    ${test_dir:?}/test_pr_0344.md
     PASS    ${test_dir:?}/test_issue-03_01.md
     PASS    ${test_dir:?}/test_issue-03_02.md
