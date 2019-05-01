@@ -5,6 +5,7 @@ Simple test that should pass.  Single line comments should be ok.
 <!--- single line comment --->
 
 <!---
+BSSw Metadata
 Publish: yes
 Categories: Planning, Reliability
 Topics: Testing, Debugging, Design

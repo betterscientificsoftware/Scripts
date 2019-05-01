@@ -11,6 +11,7 @@ PASS (for now, until deprecations are done)
 
 
 <!---
+BSSw Metadata
 Publish: preview
 Categories: Collaboration
 Topics: Licensing, Strategies for more effective teams, Funding sources and programs, Projects and organizations, Software publishing and citation, Discussion forums Q&A sites
