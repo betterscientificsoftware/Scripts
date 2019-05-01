@@ -13,7 +13,7 @@ PASS
 <!---
 Publish: preview
 Categories: Performance
-Topics: High performance computing (HPC), Performance at leadership computing facilities, Performance portability
+Topics: High-performance computing (HPC), Performance at leadership computing facilities, Performance portability
 Tags: training
 Level: 2
 Prerequisites: defaults
