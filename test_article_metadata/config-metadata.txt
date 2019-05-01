@@ -39,6 +39,10 @@ D Topics,Categories,Planning,Design
 D Topics,Categories,Planning,Software interoperability
 
 # Deprecated
+# Note: Improving productivity and sustainability is planned to be 
+#       deprecated but there are no 'replacement' topics defined (yet).
+#       This could pose an issue if there are articles that use this
+#       topic only since we don't have a replacement defined.
 D Topics,Categories,Planning,Improving productivity and sustainability
 
 # New
