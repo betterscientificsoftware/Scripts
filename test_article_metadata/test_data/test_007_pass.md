@@ -4,7 +4,7 @@ This test should 'pass' the auto testing because it's not intended to be publish
 the metadata will be performed.
 
 <!---
-BSSw Metadata
+BSSw Metadata:
 Publish: no
 Categories: Planning, Reliability, Collaboration, Crosscutting, Performance
 Topics: improving productivity and sustainability, reproducibility, testing, continuous integration testing, documentation

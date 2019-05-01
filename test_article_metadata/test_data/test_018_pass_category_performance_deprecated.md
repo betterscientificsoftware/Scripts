@@ -11,7 +11,7 @@ PASS (until deprecations happen)
 
 
 <!---
-BSSw Metadata
+BSSw Metadata:
 Publish: preview
 Categories: Performance
 Topics: High-performance computing (HPC), Performance at leadership computing facilities (LCFs), Performance portability

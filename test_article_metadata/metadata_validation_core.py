@@ -98,12 +98,12 @@ def tokenize_metadata(metadata_file_lines, program_options):
         # Skip empty lines because there won't be any key / value pairs on them.
         if len(line) == 0:
             continue
-        # Skip the special case line that contains the "BSSw Metadata" descriptor.
+        # Skip the special case line that contains the "BSSw Metadata:" descriptor.
         # Since this should always be the first line in the updated ruleset, we
         # could just slice the list to metadata_file_lines[1:] but for consistency
         # I'll put in the check here.
         # TODO: Set this up as a parameter in the configuration file for genericity.
-        if line == "BSSw Metadata":
+        if line == "BSSw Metadata:":
             continue
 
         # The line should be a key:value pair, so let's split on the ":".
@@ -195,14 +195,14 @@ def is_metadata_section(line_list, program_options):
     """
     output = False
 
-    if re.match(r"^BSSw Metadata$", line_list[0]) is not None:
+    if re.match(r"^BSSw Metadata:$", line_list[0]) is not None:
         output = True
     else:
         # DEPRECATION WARNING: This method will be deprecated in the future in favor
-        # of looking for the BSSw Metadata tag.
+        # of looking for the `BSSw Metadata:` tag.
         for line in line_list:
             if re.match(r"^Publish:", line) is not None:
-                print_message("WARNING: The metadata section should have 'BSSw Metadata' as its first line.\n" +
+                print_message("WARNING: The metadata section should have `BSSw Metadata:` as its first line.\n" +
                               "         We didn't find that here but did detect the 'Publish: [yes|no|preview]'\n" +
                               "         key:value pair so we will guess that this is the metadata section.\n" +
                               "         This behavior will be DEPRECATED in the future."

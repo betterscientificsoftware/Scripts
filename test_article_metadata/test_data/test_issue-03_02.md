@@ -7,7 +7,7 @@ Example test to check the `Publish: preview` rule works and kicks off a metadata
 This test will pass due to correctly formatted metadata.
 
 <!---
-BSSw Metadata   
+BSSw Metadata:   
 Publish: preview
 Categories: Planning, Reliability
 Topics: Testing, Debugging, Design

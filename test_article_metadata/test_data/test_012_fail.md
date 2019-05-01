@@ -6,7 +6,7 @@ Date given will not be a date at all.
 
 
 <!---
-BSSw Metadata
+BSSw Metadata:
 Publish: yes
 Categories: Planning, Reliability
 Topics: Testing, Debugging, Design

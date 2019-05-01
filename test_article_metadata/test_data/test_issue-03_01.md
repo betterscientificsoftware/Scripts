@@ -9,7 +9,7 @@ This will replace an older setup that looks for the `Publish: yes` entry to dete
 we're in the metadata section.
 
 <!---
-BSSw Metadata   
+BSSw Metadata:   
 Publish: yes
 Categories: Planning, Reliability
 Topics: Testing, Debugging, Design

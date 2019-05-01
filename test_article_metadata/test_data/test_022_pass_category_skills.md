@@ -11,7 +11,7 @@ PASS
 
 
 <!---
-BSSw Metadata
+BSSw Metadata:
 Publish: preview
 Categories: Skills
 Topics: Online learning, Personal productivity and sustainability

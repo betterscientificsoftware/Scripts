@@ -7,7 +7,7 @@ Date given will be an invalid date: 2018-11-31
 
 
 <!---
-BSSw Metadata
+BSSw Metadata:
 Publish: yes
 Categories: Planning, Reliability
 Topics: Testing, Debugging, Design

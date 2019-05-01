@@ -5,7 +5,7 @@ the metadata comment is never 'closed off', so the website should not actually p
 this since it, theoretically, wouldn't have the comment to work with.
 
 <!---
-BSSw Metadata
+BSSw Metadata:
 Publish: yes
 Categories: Planning, Reliability, Collaboration, Crosscutting, Performance
 Topics: improving productivity and sustainability, reproducibility, testing, continuous integration testing, documentation

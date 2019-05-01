@@ -1,4 +1,5 @@
-# test_004_pass
+`test_004_pass`
+==============
 
 This test document will 'pass' the acceptance test because there is no 'metadata' section at all.
 

@@ -5,7 +5,7 @@ This test file adds the optional `RSS Update: YYYY-MM-DD` tag to the metadata.
 Date given will be a valid date: 2018-11-21
 
 <!---
-BSSw Metadata
+BSSw Metadata:
 Publish: yes
 Categories: Planning, Reliability
 Topics: Testing, Debugging, Design

@@ -11,7 +11,7 @@ PASS
 
 
 <!---
-BSSw Metadata
+BSSw Metadata:
 Publish: preview
 Categories: Collaboration
 Topics: Projects and organizations, Strategies for more effective teams, Funding sources and programs, Software publishing and citation, Licensing, Discussion and question sites, Conferences and workshops
