@@ -6,6 +6,7 @@ tag and thus shouldn't actually publish this.  It's effecitvely the same as a fi
 metadata section
 
 
+BSSw Metadata:
 Publish: yes
 Categories: Planning, Reliability, Collaboration, Crosscutting, Performance
 Topics: improving productivity and sustainability, reproducibility, testing, continuous integration testing, documentation

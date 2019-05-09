@@ -10,13 +10,20 @@ colorize(color_name, text, terminal_type) - apply color codes to a text string b
                                             terminal type.
 """
 
-colors = {"none":  "\033[0m",
-          "cyan":  "\033[1;36m",
-          "green": "\033[0;32m",
-          "red":   "\033[0;31m",
-          "yellow": "\033[0;33m",
-          "brightgreen": "\033[1;32m",
+colors = {"none":         "\033[0m",
+          "blue":         "\033[0;34m",
+          "gray":         "\033[0;30m",
+          "cyan":         "\033[1;36m",
+          "green":        "\033[0;32m",
+          "red":          "\033[0;31m",
+          "yellow":       "\033[0;33m",
+          "white":        "\033[0;37m",
+          "brightblue":   "\033[1;34m",
+          "brightgray":   "\033[1;30m",
+          "brightgreen":  "\033[1;32m",
+          "brightred":    "\033[1;31m",
           "brightyellow": "\033[1;33m",
+          "brightwhite":  "\033[1;37m",
           }
 
 

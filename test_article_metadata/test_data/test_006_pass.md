@@ -7,6 +7,7 @@ This is a regular comment.
 This test should 'pass' because the metadata checks out and the initial comment (above) is just a comment but isn't the metadata comment.
 
 <!---
+BSSw Metadata:
 Publish: yes
 Categories: Planning, Reliability
 Topics: Testing, Debugging, Design

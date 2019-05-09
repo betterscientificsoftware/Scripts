@@ -23,6 +23,7 @@
 # Publish
 R Publish, yes
 R Publish, no
+R Publish, preview
 
 
 ################################################################################
@@ -33,29 +34,51 @@ R Publish, no
 
 ########################################
 # Topics (Categories = Planning)
-D Topics,Categories,Planning,Improving productivity and sustainability
 D Topics,Categories,Planning,Requirements
 D Topics,Categories,Planning,Design
 D Topics,Categories,Planning,Software interoperability
+
+# Deprecated
+# Note: Improving productivity and sustainability is planned to be 
+#       deprecated but there are no 'replacement' topics defined (yet).
+#       This could pose an issue if there are articles that use this
+#       topic only since we don't have a replacement defined.
+D Topics,Categories,Planning,Improving productivity and sustainability
+
+# New
+D Topics,Categories,Planning,Software engineering
 
 
 ########################################
 # Topics (Categories = Development)
 D Topics,Categories,Development,Documentation
-D Topics,Categories,Development,Version control
 D Topics,Categories,Development,Configuration and builds
-D Topics,Categories,Development,Deployment
 D Topics,Categories,Development,Issue tracking
 D Topics,Categories,Development,Refactoring
+
+# Deprecated
 D Topics,Categories,Development,Software engineering
+D Topics,Categories,Development,Version control
+D Topics,Categories,Development,Deployment
 D Topics,Categories,Development,Development tools
+
+# New
+D Topics,Categories,Development,Revision control
+D Topics,Categories,Development,Software release and deployment
+D Topics,Categories,Development,Scientific programming languages
+D Topics,Categories,Development,Programming tools
 
 
 ########################################
 # Topics (Categories = Performance)
 D Topics,Categories,Performance,High-performance computing (HPC)
-D Topics,Categories,Performance,Performance at leadership computing facilities (LCFs)
 D Topics,Categories,Performance,Performance portability
+
+# Deprecated
+D Topics,Categories,Performance,Performance at leadership computing facilities (LCFs)
+
+# New
+D Topics,Categories,Performance,Performance at leadership computing facilities
 
 
 ########################################
@@ -73,13 +96,23 @@ D Topics,Categories,Collaboration,Strategies for more effective teams
 D Topics,Categories,Collaboration,Funding sources and programs
 D Topics,Categories,Collaboration,Projects and organizations
 D Topics,Categories,Collaboration,Software publishing and citation
-D Topics,Categories,Collaboration,Discussion forums, Q&A sites
+
+# Deprecated
+D Topics,Categories,Collaboration,Discussion forums Q&A sites
+
+# New
+D Topics,Categories,Collaboration,Discussion and question sites
+D Topics,Categories,Collaboration,Conferences and workshops
 
 
 ########################################
 # Topics (Categories = Skills)
-D Topics,Categories,Skills,Personal productivity and sustainability
 D Topics,Categories,Skills,Online learning
+D Topics,Categories,Skills,Personal productivity and sustainability
+
+# Deprecated
+
+# New
 
 
 ################################################################################
